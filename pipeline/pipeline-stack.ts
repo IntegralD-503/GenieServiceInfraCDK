@@ -1,7 +1,7 @@
 import { SecretValue, Stack, StackProps } from "aws-cdk-lib";
 import { PipelineProject, LinuxBuildImage, BuildSpec } from "aws-cdk-lib/aws-codebuild";
 import { Artifact, IStage, Pipeline } from "aws-cdk-lib/aws-codepipeline";
-import { CloudFormationCreateUpdateStackAction, CodeBuildAction, GitHubSourceAction } from "aws-cdk-lib/aws-codepipeline-actions";
+import { CloudFormationCreateUpdateStackAction, CodeBuildAction, EcsDeployAction, GitHubSourceAction } from "aws-cdk-lib/aws-codepipeline-actions";
 import { Construct } from "constructs";
 import { GenieServiceStack } from "../lib/genie_service-stack";
 
@@ -38,7 +38,7 @@ export class PipelineStack extends Stack {
               new GitHubSourceAction({
                 owner: 'IntegralD-503',
                 repo: 'GenieService',
-                branch: 'main',
+                branch: 'master',
                 actionName: 'GenieService_Source',
                 oauthToken: SecretValue.secretsManager('github-token'),
                 output: this.genieServiceSourceOutput
@@ -64,14 +64,14 @@ export class PipelineStack extends Stack {
                 })
               }),
               new CodeBuildAction({
-                actionName: 'ModelHubAPI_Build',
+                actionName: 'GenieService_Build',
                 input: this.genieServiceSourceOutput,
                 outputs: [ this.genieServiceBuildOutput ],
                 project: new PipelineProject(this, 'GenieServiceBuildProject', {
                   environment: {
                     buildImage: LinuxBuildImage.AMAZON_LINUX_2_4
                   },
-                  buildSpec: BuildSpec.fromSourceFilename('build-specs/genei-service-build-spec.yml')
+                  buildSpec: BuildSpec.fromSourceFilename('build-specs/genie-service-build-spec.yml')
                 })
               })
             ]
@@ -94,16 +94,11 @@ export class PipelineStack extends Stack {
       return this.pipeline.addStage({
         stageName: stageName,
         actions: [
-          new CloudFormationCreateUpdateStackAction({
-            actionName: 'GenieService_Update',
-            stackName: genieStack.stackName,
-            templatePath: this.cdkBuildOutput.atPath(`${genieStack.stackName}.template.json`),
-            adminPermissions: true,
-            parameterOverrides: {
-              ...genieStack.serviceCode.assign(this.genieServiceBuildOutput.s3Location)
-            },
-            extraInputs: [this.genieServiceBuildOutput]
-          })
+          new EcsDeployAction({
+            actionName: 'GenieServiceECS_Update',
+            service: genieStack.genieService,
+            input: this.genieServiceBuildOutput
+          }),
         ]
       })
     }
