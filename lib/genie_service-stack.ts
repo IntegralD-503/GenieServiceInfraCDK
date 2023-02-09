@@ -1,13 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
-import { Artifact } from 'aws-cdk-lib/aws-codepipeline';
 import { Peer, Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Repository } from 'aws-cdk-lib/aws-ecr';
-import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
 import { Cluster, ContainerImage, FargateService, FargateTaskDefinition, LogDrivers } from 'aws-cdk-lib/aws-ecs';
 import { ApplicationLoadBalancer } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { CfnParametersCode, Code } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 

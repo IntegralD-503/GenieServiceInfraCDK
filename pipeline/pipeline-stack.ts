@@ -70,7 +70,7 @@ export class PipelineStack extends Stack {
              CodeBuildECRTokenAccess: codeBuildECRTokenAccess
             }
           })
-
+          
           this.pipeline.addStage({
             stageName: 'Build',
             actions: [
