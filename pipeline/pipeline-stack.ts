@@ -19,7 +19,7 @@ export class PipelineStack extends Stack {
         this.pipeline = new Pipeline(this, 'GenieServicePipeline', {
             pipelineName: 'GenieServicePipeline',
             crossAccountKeys: false,
-            restartExecutionOnUpdate: true
+            restartExecutionOnUpdate: true,
           });
       
           const cdkSourceOutput = new Artifact('GenieServiceCDKOutput');
@@ -71,13 +71,13 @@ export class PipelineStack extends Stack {
           //   }
           // })
 
-          this.pipeline.addToRolePolicy(new PolicyStatement({
-            effect: Effect.ALLOW,
-            resources: ['*'],
-            actions: [
-                      "ecr:GetAuthorizationToken",
-                  ]
-          }))
+          // this.pipeline.addToRolePolicy(new PolicyStatement({
+          //   effect: Effect.ALLOW,
+          //   resources: ['*'],
+          //   actions: [
+          //             "ecr:GetAuthorizationToken",
+          //         ]
+          // }))
           
           this.pipeline.addStage({
             stageName: 'Build',
@@ -99,7 +99,8 @@ export class PipelineStack extends Stack {
                 outputs: [ this.genieServiceBuildOutput ],
                 project: new PipelineProject(this, 'GenieServiceBuildProject', {
                   environment: {
-                    buildImage: LinuxBuildImage.AMAZON_LINUX_2_4
+                    buildImage: LinuxBuildImage.AMAZON_LINUX_2_4,
+                    privileged: true
                   },
                   buildSpec: BuildSpec.fromSourceFilename('build-specs/genie-service-build-spec.yml')
                 }),

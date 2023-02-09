@@ -71,9 +71,7 @@ export class GenieServiceStack extends cdk.Stack {
       environment: { 
         // 'DYNAMODB_MESSAGES_TABLE': table.tableName,
         'APP_ID' : 'genie-service'
-      },
-      privileged: true
-      
+      }      
       // ... other options here ...
     });
     
