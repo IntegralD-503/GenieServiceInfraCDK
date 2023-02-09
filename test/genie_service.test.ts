@@ -11,6 +11,8 @@ test('Genie Service Stack Created', () => {
     // THEN
   const template = Template.fromStack(stack);
 
-  template.hasResourceProperties('AWS::ECR::Repository', {
-  });
+//   template.hasResourceProperties('AWS::ECR::Repository', {
+//   });
+
+  expect(template).toMatchSnapshot();
 });
