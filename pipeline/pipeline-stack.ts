@@ -52,24 +52,32 @@ export class PipelineStack extends Stack {
           this.cdkBuildOutput = new Artifact("CdkBuildOutput");
           this.genieServiceBuildOutput = new Artifact("GenieServiceBuildOutput");
     
-          const codeBuildECRTokenAccess = new PolicyDocument({
-            statements: [
-              new PolicyStatement({
-                effect: Effect.ALLOW,
-                resources: ['*'],
-                actions: [
-                          "ecr:GetAuthorizationToken",
-                      ]
-              })
-            ]
-          });
+          // const codeBuildECRTokenAccess = new PolicyDocument({
+          //   statements: [
+          //     new PolicyStatement({
+          //       effect: Effect.ALLOW,
+          //       resources: ['*'],
+          //       actions: [
+          //                 "ecr:GetAuthorizationToken",
+          //             ]
+          //     })
+          //   ]
+          // });
 
-          const codeBuildECRTokenAccessRole = new Role(this, "GenieServiceBuildActionECRRole", {
-            assumedBy: new ServicePrincipal("codebuild.amazonaws.com"),
-            inlinePolicies: {
-             CodeBuildECRTokenAccess: codeBuildECRTokenAccess
-            }
-          })
+          // const codeBuildECRTokenAccessRole = new Role(this, "GenieServiceBuildActionECRRole", {
+          //   assumedBy: new ServicePrincipal("codebuild.amazonaws.com"),
+          //   inlinePolicies: {
+          //    CodeBuildECRTokenAccess: codeBuildECRTokenAccess
+          //   }
+          // })
+
+          this.pipeline.addToRolePolicy(new PolicyStatement({
+            effect: Effect.ALLOW,
+            resources: ['*'],
+            actions: [
+                      "ecr:GetAuthorizationToken",
+                  ]
+          }))
           
           this.pipeline.addStage({
             stageName: 'Build',
@@ -95,7 +103,7 @@ export class PipelineStack extends Stack {
                   },
                   buildSpec: BuildSpec.fromSourceFilename('build-specs/genie-service-build-spec.yml')
                 }),
-                role: codeBuildECRTokenAccessRole
+                // role: codeBuildECRTokenAccessRole
               })
             ]
           });
