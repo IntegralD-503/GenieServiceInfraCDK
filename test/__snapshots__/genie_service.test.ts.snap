@@ -315,7 +315,6 @@ exports[`Genie Service Stack Created 1`] = `
                 "Protocol": "tcp",
               },
             ],
-            "Privileged": true,
           },
         ],
         "Cpu": "512",
